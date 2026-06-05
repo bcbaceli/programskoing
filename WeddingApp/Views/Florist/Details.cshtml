@@ -1,0 +1,59 @@
+@model WeddingApp.Models.Florist
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Florist</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ArrangementName)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ArrangementName)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ItemId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ItemId)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Item)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Item)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PartnerId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PartnerId)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Partner)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Partner)
+        </dd>
+    </dl>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.WeddingCeremonies)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.WeddingCeremonies)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
