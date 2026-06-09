@@ -3,16 +3,20 @@
   "WorkspaceRootPath": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4640C337-A24A-4975-9FBE-7D3BC2D5E8CC}|WeddingApp.API\\WeddingApp.API.csproj|c:\\users\\copic\\source\\repos\\weddingagency\\weddingapp.api\\models\\partnerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4640C337-A24A-4975-9FBE-7D3BC2D5E8CC}|WeddingApp.API\\WeddingApp.API.csproj|solutionrelative:weddingapp.api\\models\\partnerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4640C337-A24A-4975-9FBE-7D3BC2D5E8CC}|WeddingApp.API\\WeddingApp.API.csproj|c:\\users\\copic\\source\\repos\\weddingagency\\weddingapp.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{4640C337-A24A-4975-9FBE-7D3BC2D5E8CC}|WeddingApp.API\\WeddingApp.API.csproj|solutionrelative:weddingapp.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4640C337-A24A-4975-9FBE-7D3BC2D5E8CC}|WeddingApp.API\\WeddingApp.API.csproj|c:\\users\\copic\\source\\repos\\weddingagency\\weddingapp.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4640C337-A24A-4975-9FBE-7D3BC2D5E8CC}|WeddingApp.API\\WeddingApp.API.csproj|solutionrelative:weddingapp.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4640C337-A24A-4975-9FBE-7D3BC2D5E8CC}|WeddingApp.API\\WeddingApp.API.csproj|c:\\users\\copic\\source\\repos\\weddingagency\\weddingapp.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{4640C337-A24A-4975-9FBE-7D3BC2D5E8CC}|WeddingApp.API\\WeddingApp.API.csproj|solutionrelative:weddingapp.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp.API\\Controllers\\PartnersController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:WeddingApp.API\\Controllers\\PartnersController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4640C337-A24A-4975-9FBE-7D3BC2D5E8CC}|WeddingApp.API\\WeddingApp.API.csproj|c:\\users\\copic\\source\\repos\\weddingagency\\weddingapp.api\\models\\partnerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4640C337-A24A-4975-9FBE-7D3BC2D5E8CC}|WeddingApp.API\\WeddingApp.API.csproj|solutionrelative:weddingapp.api\\models\\partnerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{94E06282-5622-136A-84B7-955EA308A88D}|WeddingApp\\WeddingApp.csproj|c:\\users\\copic\\source\\repos\\weddingagency\\weddingapp\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -78,17 +82,30 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
+              "Title": "PartnersController.cs",
+              "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp.API\\Controllers\\PartnersController.cs",
+              "RelativeDocumentMoniker": "WeddingApp.API\\Controllers\\PartnersController.cs",
+              "ToolTip": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp.API\\Controllers\\PartnersController.cs",
+              "RelativeToolTip": "WeddingApp.API\\Controllers\\PartnersController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-08T19:19:24.972Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "PartnerDto.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp.API\\Models\\PartnerDto.cs",
               "RelativeDocumentMoniker": "WeddingApp.API\\Models\\PartnerDto.cs",
               "ToolTip": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp.API\\Models\\PartnerDto.cs",
               "RelativeToolTip": "WeddingApp.API\\Models\\PartnerDto.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAbAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-06T09:21:33.286Z",
               "EditorCaption": ""
@@ -101,40 +118,40 @@
               "RelativeDocumentMoniker": "WeddingApp.API\\Program.cs",
               "ToolTip": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp.API\\Program.cs",
               "RelativeToolTip": "WeddingApp.API\\Program.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAqwCIAAAAKAAAAAAAAAA==",
+              "ViewState": "AgIAABkAAAAAAAAAAAAqwDAAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-06T09:19:22.505Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp.API\\appsettings.json",
               "RelativeDocumentMoniker": "WeddingApp.API\\appsettings.json",
               "ToolTip": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp.API\\appsettings.json",
               "RelativeToolTip": "WeddingApp.API\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-06-06T09:13:48.395Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Program.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Program.cs",
               "ToolTip": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Program.cs",
               "RelativeToolTip": "WeddingApp\\Program.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAACMAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAIBJwCMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-06T09:07:13.464Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "Mutation.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\GraphQL\\Mutation.cs",
               "RelativeDocumentMoniker": "WeddingApp\\GraphQL\\Mutation.cs",
@@ -147,7 +164,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "Query.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\GraphQL\\Query.cs",
               "RelativeDocumentMoniker": "WeddingApp\\GraphQL\\Query.cs",
@@ -160,7 +177,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "WeddingTemplateController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\WeddingTemplateController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\WeddingTemplateController.cs",
@@ -173,7 +190,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "WeddingController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\WeddingController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\WeddingController.cs",
@@ -186,7 +203,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "PartnerCategoryController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\PartnerCategoryController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\PartnerCategoryController.cs",
@@ -199,7 +216,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "PartnerController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\PartnerController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\PartnerController.cs",
@@ -212,7 +229,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "PlaylistController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\PlaylistController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\PlaylistController.cs",
@@ -225,7 +242,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "PastryController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\PastryController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\PastryController.cs",
@@ -238,7 +255,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "ItemController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\ItemController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\ItemController.cs",
@@ -251,7 +268,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 14,
               "Title": "GenrePlaylistController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\GenrePlaylistController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\GenrePlaylistController.cs",
@@ -264,7 +281,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 15,
               "Title": "FoodMenuController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\FoodMenuController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\FoodMenuController.cs",
@@ -277,7 +294,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 16,
               "Title": "FloristController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\FloristController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\FloristController.cs",
@@ -290,7 +307,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 17,
               "Title": "BandController.cs",
               "DocumentMoniker": "C:\\Users\\copic\\source\\repos\\WeddingAgency\\WeddingApp\\Controllers\\BandController.cs",
               "RelativeDocumentMoniker": "WeddingApp\\Controllers\\BandController.cs",
