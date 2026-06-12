@@ -1,150 +1,84 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WeddingApp.Models;
 using WeddingApp.Data;
+using WeddingApp.Models;
+using WeddingApp.ViewModels;
 
-public class ItemController : Controller
+namespace WeddingApp.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public ItemController(AppDbContext context)
+    [AutoValidateAntiforgeryToken]
+    public class ItemController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        private const int PageSize = 10;
 
-    // GET: ITEMS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.Items.ToListAsync());
-    }
+        public ItemController(AppDbContext context) => _context = context;
 
-    // GET: ITEMS/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Index(string sortBy = "name", string sortDir = "asc", int page = 1)
         {
-            return NotFound();
+            var query = _context.Items.AsNoTracking();
+            query = (sortBy, sortDir) switch
+            {
+                ("name", "desc") => query.OrderByDescending(x => x.Name),
+                _ => query.OrderBy(x => x.Name)
+            };
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * PageSize).Take(PageSize).ToListAsync();
+            return View(new IndexViewModel<Item> { Items = items, CurrentPage = page, TotalPages = (int)Math.Ceiling(total / (double)PageSize), SortBy = sortBy, SortDir = sortDir });
         }
 
-        var item = await _context.Items
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (item == null)
+        public async Task<IActionResult> Details(int id)
         {
-            return NotFound();
+            var item = await _context.Items.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        return View(item);
-    }
+        public IActionResult Create() => View(new ItemFormViewModel());
 
-    // GET: ITEMS/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: ITEMS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Name,Florists,Pastries")] Item item)
-    {
-        if (ModelState.IsValid)
+        [HttpPost]
+        public async Task<IActionResult> Create(ItemFormViewModel vm)
         {
-            _context.Add(item);
+            if (!ModelState.IsValid) return View(vm);
+            _context.Items.Add(new Item { Name = vm.Name });
             await _context.SaveChangesAsync();
+            TempData["Success"] = $"Item '{vm.Name}' created.";
             return RedirectToAction(nameof(Index));
         }
-        return View(item);
-    }
 
-    // GET: ITEMS/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Edit(int id)
         {
-            return NotFound();
+            var item = await _context.Items.FindAsync(id);
+            if (item == null) return NotFound();
+            return View(new ItemFormViewModel { Id = item.Id, Name = item.Name });
         }
 
-        var item = await _context.Items.FindAsync(id);
-        if (item == null)
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, ItemFormViewModel vm)
         {
-            return NotFound();
-        }
-        return View(item);
-    }
-
-    // POST: ITEMS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,Name,Florists,Pastries")] Item item)
-    {
-        if (id != item.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(item);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ItemExists(item.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (id != vm.Id) return NotFound();
+            if (!ModelState.IsValid) return View(vm);
+            var item = await _context.Items.FindAsync(id);
+            if (item == null) return NotFound();
+            item.Name = vm.Name;
+            await _context.SaveChangesAsync();
+            TempData["Success"] = $"Item '{item.Name}' updated.";
             return RedirectToAction(nameof(Index));
         }
-        return View(item);
-    }
 
-    // GET: ITEMS/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Delete(int id)
         {
-            return NotFound();
+            var item = await _context.Items.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        var item = await _context.Items
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (item == null)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return NotFound();
+            var item = await _context.Items.FindAsync(id);
+            if (item != null) { _context.Items.Remove(item); await _context.SaveChangesAsync(); TempData["Success"] = $"Item '{item.Name}' deleted."; }
+            return RedirectToAction(nameof(Index));
         }
-
-        return View(item);
-    }
-
-    // POST: ITEMS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
-    {
-        var item = await _context.Items.FindAsync(id);
-        if (item != null)
-        {
-            _context.Items.Remove(item);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool ItemExists(int? id)
-    {
-        return _context.Items.Any(e => e.Id == id);
     }
 }

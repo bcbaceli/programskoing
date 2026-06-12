@@ -1,0 +1,74 @@
+@model WeddingApp.ViewModels.WeddingCeremonyFormViewModel
+
+@{
+    ViewData["Title"] = "New Wedding Ceremony";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>New Wedding Ceremony</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="WeddingId" class="form-label"></label>
+                <select asp-for="WeddingId" asp-items="Model.Weddings" class="form-select">
+                    <option value="">-- Select --</option>
+                </select>
+                <span asp-validation-for="WeddingId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="RestaurantId" class="form-label"></label>
+                <select asp-for="RestaurantId" asp-items="Model.Restaurants" class="form-select">
+                    <option value="">-- Select --</option>
+                </select>
+                <span asp-validation-for="RestaurantId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BandId" class="form-label"></label>
+                <select asp-for="BandId" asp-items="Model.Bands" class="form-select">
+                    <option value="">-- Select --</option>
+                </select>
+                <span asp-validation-for="BandId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FloristId" class="form-label"></label>
+                <select asp-for="FloristId" asp-items="Model.Florists" class="form-select">
+                    <option value="">-- Select --</option>
+                </select>
+                <span asp-validation-for="FloristId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Price" class="form-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="VAT" class="form-label"></label>
+                <input asp-for="VAT" class="form-control" />
+                <span asp-validation-for="VAT" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TotalPrice" class="form-label"></label>
+                <input asp-for="TotalPrice" class="form-control" />
+                <span asp-validation-for="TotalPrice" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

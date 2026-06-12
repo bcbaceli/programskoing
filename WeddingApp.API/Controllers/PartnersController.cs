@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WeddingApp.API.Models;
-using WeddingApp.Data;
-using WeddingApp.Models;
 
 namespace WeddingApp.API.Controllers
 {
@@ -20,7 +17,6 @@ namespace WeddingApp.API.Controllers
 
         // GET: api/Partners
         [HttpGet]
-        [Authorize(Policy = "ReadPartners")]
         public async Task<ActionResult<IEnumerable<PartnerDto>>> GetAll()
         {
             var partners = await _context.Partners
@@ -33,34 +29,58 @@ namespace WeddingApp.API.Controllers
                     Phone = p.Phone,
                     Email = p.Email,
                     CommissionPct = p.CommissionPct,
-                    CategoryName = p.Category!.Name
-                }).ToListAsync();
+                    CategoryName = p.Category != null ? p.Category.Name : null
+                })
+                .ToListAsync();
 
             return Ok(partners);
         }
 
         // GET: api/Partners/5
         [HttpGet("{id}")]
-        [Authorize(Policy = "ReadPartners")]
-        public async Task<ActionResult<Partner>> GetById(int id)
+        public async Task<ActionResult<PartnerDto>> GetById(int id)
         {
             var partner = await _context.Partners
-            .Include(p => p.Category)
-            .FirstOrDefaultAsync(p => p.Id == id);
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (partner == null) return NotFound();
 
-            return Ok(partner);
+            var dto = new PartnerDto
+            {
+                Id = partner.Id,
+                Name = partner.Name,
+                Address = partner.Address,
+                Phone = partner.Phone,
+                Email = partner.Email,
+                CommissionPct = partner.CommissionPct,
+                CategoryName = partner.Category?.Name
+            };
+
+            return Ok(dto);
         }
+
+        // POST: api/Partners
         [HttpPost]
-        [Authorize(Policy = "WritePartners")]
-        public async Task<ActionResult<Partner>> Create(Partner partner)
+        public async Task<ActionResult<PartnerDto>> Create(Partner partner)
         {
             _context.Partners.Add(partner);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = partner.Id }, partner);
+            var dto = new PartnerDto
+            {
+                Id = partner.Id,
+                Name = partner.Name,
+                Address = partner.Address,
+                Phone = partner.Phone,
+                Email = partner.Email,
+                CommissionPct = partner.CommissionPct
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = partner.Id }, dto);
         }
+
+        // PUT: api/Partners/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, Partner partner)
         {
@@ -74,20 +94,19 @@ namespace WeddingApp.API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PartnerExists(id))
-                {
+                if (!_context.Partners.Any(e => e.Id == id))
                     return NotFound();
-                    throw;
-                }
+                throw;
             }
+
             return NoContent();
         }
 
+        // DELETE: api/Partners/5
         [HttpDelete("{id}")]
-        [Authorize(Policy = "WritePartners")]
         public async Task<IActionResult> Delete(int id)
         {
-            var partner = await _context.Partners.FindAsync();
+            var partner = await _context.Partners.FindAsync(id);
             if (partner == null) return NotFound();
 
             _context.Partners.Remove(partner);
@@ -95,6 +114,5 @@ namespace WeddingApp.API.Controllers
 
             return NoContent();
         }
-        private bool PartnerExists(int id) => _context.Partners.Any(e => e.Id == id);
     }
 }

@@ -10,7 +10,7 @@
         public string? Email { get; set; }
         public decimal CommissionPct { get; set; }
 
-        public PartnerCategory Category { get; set; } = null!;
+        public virtual PartnerCategory? Category { get; set; }
         
     }
 }

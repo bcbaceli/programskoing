@@ -1,0 +1,85 @@
+@model WeddingApp.ViewModels.IndexViewModel<WeddingApp.Models.WeddingCeremony>
+
+@{
+    ViewData["Title"] = "Wedding Ceremonies";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Wedding Ceremonies</h1>
+    <a asp-action="Create" class="btn btn-primary">+ New Ceremony</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<table class="table table-striped table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sortBy="wedding"
+                   asp-route-sortDir="@(Model.SortBy == "wedding" ? Model.FlipDir : "asc")"
+                   asp-route-page="1"
+                   class="text-white text-decoration-none">
+                    Wedding Date @Model.SortIcon("wedding")
+                </a>
+            </th>
+            <th>Restaurant</th>
+            <th>Band</th>
+            <th>Florist</th>
+            <th>Price</th>
+            <th>VAT%</th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-sortBy="price"
+                   asp-route-sortDir="@(Model.SortBy == "price" ? Model.FlipDir : "asc")"
+                   asp-route-page="1"
+                   class="text-white text-decoration-none">
+                    Total @Model.SortIcon("price")
+                </a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.Wedding?.Date.ToString("d")</td>
+                <td>@item.Restaurant?.Name</td>
+                <td>@item.Band?.Name</td>
+                <td>@item.Florist?.ArrangementName</td>
+                <td>@item.Price</td>
+                <td>@item.VAT</td>
+                <td>@item.TotalPrice</td>
+                <td class="text-end">
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.TotalPages > 1)
+{
+    <nav><ul class="pagination justify-content-center">
+        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-sortBy="@Model.SortBy" asp-route-sortDir="@Model.SortDir">&laquo;</a>
+        </li>
+        @for (int i = 1; i <= Model.TotalPages; i++) {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-sortBy="@Model.SortBy" asp-route-sortDir="@Model.SortDir">@i</a>
+            </li>
+        }
+        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-sortBy="@Model.SortBy" asp-route-sortDir="@Model.SortDir">&raquo;</a>
+        </li>
+    </ul></nav>
+}

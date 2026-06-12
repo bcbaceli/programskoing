@@ -1,2 +1,0 @@
-C:\Users\copic\source\repos\WeddingAgency\WeddingApp\obj\Debug\net10.0\staticwebassets.build.json
-C:\Users\copic\source\repos\WeddingAgency\WeddingApp\obj\Debug\net10.0\staticwebassets.build.json

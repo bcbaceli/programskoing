@@ -1,153 +1,84 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WeddingApp.Models;
 using WeddingApp.Data;
+using WeddingApp.Models;
+using WeddingApp.ViewModels;
 
-public class PartnerCategoryController : Controller
+namespace WeddingApp.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public PartnerCategoryController(AppDbContext context)
+    [AutoValidateAntiforgeryToken]
+    public class PartnerCategoryController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        private const int PageSize = 10;
 
-    // GET: PARTNERCATEGORYS
-    public async Task<IActionResult> Index()
-    {
-        var appDbContext = _context.PartnerCategories.Include(c => c.Partners);
-        return View(await appDbContext.ToListAsync());
-    }
+        public PartnerCategoryController(AppDbContext context) => _context = context;
 
-    // GET: PARTNERCATEGORYS/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Index(string sortBy = "name", string sortDir = "asc", int page = 1)
         {
-            return NotFound();
+            var query = _context.PartnerCategories.AsNoTracking();
+            query = (sortBy, sortDir) switch
+            {
+                ("name", "desc") => query.OrderByDescending(x => x.Name),
+                _ => query.OrderBy(x => x.Name)
+            };
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * PageSize).Take(PageSize).ToListAsync();
+            return View(new IndexViewModel<PartnerCategory> { Items = items, CurrentPage = page, TotalPages = (int)Math.Ceiling(total / (double)PageSize), SortBy = sortBy, SortDir = sortDir });
         }
 
-        var partnercategory = await _context.PartnerCategories
-            .Include(c => c.Partners)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (partnercategory == null)
+        public async Task<IActionResult> Details(int id)
         {
-            return NotFound();
+            var item = await _context.PartnerCategories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        return View(partnercategory);
-    }
+        public IActionResult Create() => View(new PartnerCategoryFormViewModel());
 
-    // GET: PARTNERCATEGORYS/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: PARTNERCATEGORYS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Name,Description")] PartnerCategory partnercategory)
-    {
-        if (ModelState.IsValid)
+        [HttpPost]
+        public async Task<IActionResult> Create(PartnerCategoryFormViewModel vm)
         {
-            _context.Add(partnercategory);
+            if (!ModelState.IsValid) return View(vm);
+            _context.PartnerCategories.Add(new PartnerCategory { Name = vm.Name, Description = vm.Description });
             await _context.SaveChangesAsync();
+            TempData["Success"] = $"Category '{vm.Name}' created.";
             return RedirectToAction(nameof(Index));
         }
-        return View(partnercategory);
-    }
 
-    // GET: PARTNERCATEGORYS/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Edit(int id)
         {
-            return NotFound();
+            var item = await _context.PartnerCategories.FindAsync(id);
+            if (item == null) return NotFound();
+            return View(new PartnerCategoryFormViewModel { Id = item.Id, Name = item.Name, Description = item.Description });
         }
 
-        var partnercategory = await _context.PartnerCategories.FindAsync(id);
-        if (partnercategory == null)
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, PartnerCategoryFormViewModel vm)
         {
-            return NotFound();
-        }
-        return View(partnercategory);
-    }
-
-    // POST: PARTNERCATEGORYS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,Name,Description")] PartnerCategory partnercategory)
-    {
-        if (id != partnercategory.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(partnercategory);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PartnerCategoryExists(partnercategory.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (id != vm.Id) return NotFound();
+            if (!ModelState.IsValid) return View(vm);
+            var item = await _context.PartnerCategories.FindAsync(id);
+            if (item == null) return NotFound();
+            item.Name = vm.Name; item.Description = vm.Description;
+            await _context.SaveChangesAsync();
+            TempData["Success"] = $"Category '{item.Name}' updated.";
             return RedirectToAction(nameof(Index));
         }
-        return View(partnercategory);
-    }
 
-    // GET: PARTNERCATEGORYS/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Delete(int id)
         {
-            return NotFound();
+            var item = await _context.PartnerCategories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        var partnercategory = await _context.PartnerCategories
-            .Include(c => c.Partners)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (partnercategory == null)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return NotFound();
+            var item = await _context.PartnerCategories.FindAsync(id);
+            if (item != null) { _context.PartnerCategories.Remove(item); await _context.SaveChangesAsync(); TempData["Success"] = $"Category '{item.Name}' deleted."; }
+            return RedirectToAction(nameof(Index));
         }
-
-        return View(partnercategory);
-    }
-
-    // POST: PARTNERCATEGORYS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
-    {
-        var partnercategory = await _context.PartnerCategories.FindAsync(id);
-        if (partnercategory != null)
-        {
-            _context.PartnerCategories.Remove(partnercategory);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool PartnerCategoryExists(int? id)
-    {
-        return _context.PartnerCategories.Any(e => e.Id == id);
     }
 }

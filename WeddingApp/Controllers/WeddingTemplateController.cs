@@ -1,153 +1,84 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WeddingApp.Models;
 using WeddingApp.Data;
+using WeddingApp.Models;
+using WeddingApp.ViewModels;
 
-public class WeddingTemplateController : Controller
+namespace WeddingApp.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public WeddingTemplateController(AppDbContext context)
+    [AutoValidateAntiforgeryToken]
+    public class WeddingTemplateController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        private const int PageSize = 10;
 
-    // GET: WEDDINGTEMPLATES
-    public async Task<IActionResult> Index()
-    {
-        var appDbContext = _context.WeddingTemplates.Include(t => t.Weddings);
-        return View(await _context.WeddingTemplates.ToListAsync());
-    }
+        public WeddingTemplateController(AppDbContext context) => _context = context;
 
-    // GET: WEDDINGTEMPLATES/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Index(string sortBy = "name", string sortDir = "asc", int page = 1)
         {
-            return NotFound();
+            var query = _context.WeddingTemplates.AsNoTracking();
+            query = (sortBy, sortDir) switch
+            {
+                ("name", "desc") => query.OrderByDescending(x => x.Name),
+                _ => query.OrderBy(x => x.Name)
+            };
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * PageSize).Take(PageSize).ToListAsync();
+            return View(new IndexViewModel<WeddingTemplate> { Items = items, CurrentPage = page, TotalPages = (int)Math.Ceiling(total / (double)PageSize), SortBy = sortBy, SortDir = sortDir });
         }
 
-        var weddingtemplate = await _context.WeddingTemplates
-            .Include(t => t.Weddings)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (weddingtemplate == null)
+        public async Task<IActionResult> Details(int id)
         {
-            return NotFound();
+            var item = await _context.WeddingTemplates.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        return View(weddingtemplate);
-    }
+        public IActionResult Create() => View(new WeddingTemplateFormViewModel());
 
-    // GET: WEDDINGTEMPLATES/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: WEDDINGTEMPLATES/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Name,Description")] WeddingTemplate weddingtemplate)
-    {
-        if (ModelState.IsValid)
+        [HttpPost]
+        public async Task<IActionResult> Create(WeddingTemplateFormViewModel vm)
         {
-            _context.Add(weddingtemplate);
+            if (!ModelState.IsValid) return View(vm);
+            _context.WeddingTemplates.Add(new WeddingTemplate { Name = vm.Name, Description = vm.Description });
             await _context.SaveChangesAsync();
+            TempData["Success"] = $"Template '{vm.Name}' created.";
             return RedirectToAction(nameof(Index));
         }
-        return View(weddingtemplate);
-    }
 
-    // GET: WEDDINGTEMPLATES/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Edit(int id)
         {
-            return NotFound();
+            var item = await _context.WeddingTemplates.FindAsync(id);
+            if (item == null) return NotFound();
+            return View(new WeddingTemplateFormViewModel { Id = item.Id, Name = item.Name, Description = item.Description });
         }
 
-        var weddingtemplate = await _context.WeddingTemplates.FindAsync(id);
-        if (weddingtemplate == null)
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, WeddingTemplateFormViewModel vm)
         {
-            return NotFound();
-        }
-        return View(weddingtemplate);
-    }
-
-    // POST: WEDDINGTEMPLATES/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,Name,Description")] WeddingTemplate weddingtemplate)
-    {
-        if (id != weddingtemplate.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(weddingtemplate);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!WeddingTemplateExists(weddingtemplate.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (id != vm.Id) return NotFound();
+            if (!ModelState.IsValid) return View(vm);
+            var item = await _context.WeddingTemplates.FindAsync(id);
+            if (item == null) return NotFound();
+            item.Name = vm.Name; item.Description = vm.Description;
+            await _context.SaveChangesAsync();
+            TempData["Success"] = $"Template '{item.Name}' updated.";
             return RedirectToAction(nameof(Index));
         }
-        return View(weddingtemplate);
-    }
 
-    // GET: WEDDINGTEMPLATES/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Delete(int id)
         {
-            return NotFound();
+            var item = await _context.WeddingTemplates.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        var weddingtemplate = await _context.WeddingTemplates
-            .Include(t => t.Weddings)
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (weddingtemplate == null)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return NotFound();
+            var item = await _context.WeddingTemplates.FindAsync(id);
+            if (item != null) { _context.WeddingTemplates.Remove(item); await _context.SaveChangesAsync(); TempData["Success"] = $"Template '{item.Name}' deleted."; }
+            return RedirectToAction(nameof(Index));
         }
-
-        return View(weddingtemplate);
-    }
-
-    // POST: WEDDINGTEMPLATES/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
-    {
-        var weddingtemplate = await _context.WeddingTemplates.FindAsync(id);
-        if (weddingtemplate != null)
-        {
-            _context.WeddingTemplates.Remove(weddingtemplate);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool WeddingTemplateExists(int? id)
-    {
-        return _context.WeddingTemplates.Any(e => e.Id == id);
     }
 }

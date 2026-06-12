@@ -1,54 +1,38 @@
-@model WeddingApp.Models.Playlist
+@model WeddingApp.ViewModels.PlaylistFormViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New Playlist";
 }
 
-<h1>Create</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>New Playlist</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
 
-<h4>Playlist</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="BandId" class="control-label"></label>
-                <input asp-for="BandId" class="form-control" />
+            <div class="mb-3">
+                <label asp-for="BandId" class="form-label"></label>
+                <select asp-for="BandId" asp-items="Model.Bands" class="form-select">
+                    <option value="">-- Select --</option>
+                </select>
                 <span asp-validation-for="BandId" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Band" class="control-label"></label>
-                <input asp-for="Band" class="form-control" />
-                <span asp-validation-for="Band" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="GenrePlaylists" class="control-label"></label>
-                <input asp-for="GenrePlaylists" class="form-control" />
-                <span asp-validation-for="GenrePlaylists" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="SongPlaylists" class="control-label"></label>
-                <input asp-for="SongPlaylists" class="form-control" />
-                <span asp-validation-for="SongPlaylists" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

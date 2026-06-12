@@ -1,150 +1,100 @@
-
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WeddingApp.Models;
 using WeddingApp.Data;
+using WeddingApp.Models;
+using WeddingApp.ViewModels;
 
-public class FloristController : Controller
+namespace WeddingApp.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public FloristController(AppDbContext context)
+    [AutoValidateAntiforgeryToken]
+    public class FloristController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        private const int PageSize = 10;
 
-    // GET: FLORISTS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.Florists.ToListAsync());
-    }
+        public FloristController(AppDbContext context) => _context = context;
 
-    // GET: FLORISTS/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Index(string sortBy = "name", string sortDir = "asc", int page = 1)
         {
-            return NotFound();
+            var query = _context.Florists.Include(x => x.Item).Include(x => x.Partner).AsNoTracking();
+            query = (sortBy, sortDir) switch
+            {
+                ("name",    "desc") => query.OrderByDescending(x => x.ArrangementName),
+                ("item",    "asc")  => query.OrderBy(x => x.Item.Name),
+                ("item",    "desc") => query.OrderByDescending(x => x.Item.Name),
+                ("partner", "asc")  => query.OrderBy(x => x.Partner.Name),
+                ("partner", "desc") => query.OrderByDescending(x => x.Partner.Name),
+                _ => query.OrderBy(x => x.ArrangementName)
+            };
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * PageSize).Take(PageSize).ToListAsync();
+            return View(new IndexViewModel<Florist> { Items = items, CurrentPage = page, TotalPages = (int)Math.Ceiling(total / (double)PageSize), SortBy = sortBy, SortDir = sortDir });
         }
 
-        var florist = await _context.Florists
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (florist == null)
+        public async Task<IActionResult> Details(int id)
         {
-            return NotFound();
+            var item = await _context.Florists.Include(x => x.Item).Include(x => x.Partner).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        return View(florist);
-    }
+        public async Task<IActionResult> Create() =>
+            View(new FloristFormViewModel { Items = await GetItemsAsync(), Partners = await GetPartnersAsync() });
 
-    // GET: FLORISTS/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: FLORISTS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,ArrangementName,ItemId,Item,PartnerId,Partner,WeddingCeremonies")] Florist florist)
-    {
-        if (ModelState.IsValid)
+        [HttpPost]
+        public async Task<IActionResult> Create(FloristFormViewModel vm)
         {
-            _context.Add(florist);
+            if (!ModelState.IsValid) { vm.Items = await GetItemsAsync(); vm.Partners = await GetPartnersAsync(); return View(vm); }
+            _context.Florists.Add(new Florist { ArrangementName = vm.ArrangementName, ItemId = vm.ItemId, PartnerId = vm.PartnerId });
             await _context.SaveChangesAsync();
+            TempData["Success"] = $"Florist '{vm.ArrangementName}' created.";
             return RedirectToAction(nameof(Index));
         }
-        return View(florist);
-    }
 
-    // GET: FLORISTS/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Edit(int id)
         {
-            return NotFound();
+            var item = await _context.Florists.FindAsync(id);
+            if (item == null) return NotFound();
+            return View(new FloristFormViewModel { Id = item.Id, ArrangementName = item.ArrangementName, ItemId = item.ItemId, PartnerId = item.PartnerId, Items = await GetItemsAsync(item.ItemId), Partners = await GetPartnersAsync(item.PartnerId) });
         }
 
-        var florist = await _context.Florists.FindAsync(id);
-        if (florist == null)
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, FloristFormViewModel vm)
         {
-            return NotFound();
-        }
-        return View(florist);
-    }
-
-    // POST: FLORISTS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,ArrangementName,ItemId,Item,PartnerId,Partner,WeddingCeremonies")] Florist florist)
-    {
-        if (id != florist.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(florist);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FloristExists(florist.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (id != vm.Id) return NotFound();
+            if (!ModelState.IsValid) { vm.Items = await GetItemsAsync(vm.ItemId); vm.Partners = await GetPartnersAsync(vm.PartnerId); return View(vm); }
+            var item = await _context.Florists.FindAsync(id);
+            if (item == null) return NotFound();
+            item.ArrangementName = vm.ArrangementName; item.ItemId = vm.ItemId; item.PartnerId = vm.PartnerId;
+            await _context.SaveChangesAsync();
+            TempData["Success"] = $"Florist '{item.ArrangementName}' updated.";
             return RedirectToAction(nameof(Index));
         }
-        return View(florist);
-    }
 
-    // GET: FLORISTS/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Delete(int id)
         {
-            return NotFound();
+            var item = await _context.Florists.Include(x => x.Item).Include(x => x.Partner).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        var florist = await _context.Florists
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (florist == null)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return NotFound();
+            var item = await _context.Florists.FindAsync(id);
+            if (item != null) { _context.Florists.Remove(item); await _context.SaveChangesAsync(); TempData["Success"] = $"Florist '{item.ArrangementName}' deleted."; }
+            return RedirectToAction(nameof(Index));
         }
 
-        return View(florist);
-    }
+        private async Task<IEnumerable<SelectListItem>> GetItemsAsync(int? selectedId = null) =>
+            await _context.Items.AsNoTracking().OrderBy(x => x.Name)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name, Selected = x.Id == selectedId })
+                .ToListAsync();
 
-    // POST: FLORISTS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
-    {
-        var florist = await _context.Florists.FindAsync(id);
-        if (florist != null)
-        {
-            _context.Florists.Remove(florist);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool FloristExists(int? id)
-    {
-        return _context.Florists.Any(e => e.Id == id);
+        private async Task<IEnumerable<SelectListItem>> GetPartnersAsync(int? selectedId = null) =>
+            await _context.Partners.AsNoTracking().OrderBy(x => x.Name)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name, Selected = x.Id == selectedId })
+                .ToListAsync();
     }
 }

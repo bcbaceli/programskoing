@@ -1,150 +1,98 @@
-
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WeddingApp.Models;
 using WeddingApp.Data;
+using WeddingApp.Models;
+using WeddingApp.ViewModels;
 
-public class GenrePlaylistController : Controller
+namespace WeddingApp.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public GenrePlaylistController(AppDbContext context)
+    [AutoValidateAntiforgeryToken]
+    public class GenrePlaylistController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        private const int PageSize = 10;
 
-    // GET: GENREPLAYLISTS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.GenrePlaylists.ToListAsync());
-    }
+        public GenrePlaylistController(AppDbContext context) => _context = context;
 
-    // GET: GENREPLAYLISTS/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Index(string sortBy = "genre", string sortDir = "asc", int page = 1)
         {
-            return NotFound();
+            var query = _context.GenrePlaylists.Include(x => x.Genre).Include(x => x.Playlist).AsNoTracking();
+            query = (sortBy, sortDir) switch
+            {
+                ("genre",    "desc") => query.OrderByDescending(x => x.Genre.Name),
+                ("playlist", "asc")  => query.OrderBy(x => x.Playlist.Name),
+                ("playlist", "desc") => query.OrderByDescending(x => x.Playlist.Name),
+                _ => query.OrderBy(x => x.Genre.Name)
+            };
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * PageSize).Take(PageSize).ToListAsync();
+            return View(new IndexViewModel<GenrePlaylist> { Items = items, CurrentPage = page, TotalPages = (int)Math.Ceiling(total / (double)PageSize), SortBy = sortBy, SortDir = sortDir });
         }
 
-        var genreplaylist = await _context.GenrePlaylists
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (genreplaylist == null)
+        public async Task<IActionResult> Details(int id)
         {
-            return NotFound();
+            var item = await _context.GenrePlaylists.Include(x => x.Genre).Include(x => x.Playlist).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        return View(genreplaylist);
-    }
+        public async Task<IActionResult> Create() =>
+            View(new GenrePlaylistFormViewModel { Genres = await GetGenresAsync(), Playlists = await GetPlaylistsAsync() });
 
-    // GET: GENREPLAYLISTS/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: GENREPLAYLISTS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,GenreId,Genre,PlaylistId,Playlist")] GenrePlaylist genreplaylist)
-    {
-        if (ModelState.IsValid)
+        [HttpPost]
+        public async Task<IActionResult> Create(GenrePlaylistFormViewModel vm)
         {
-            _context.Add(genreplaylist);
+            if (!ModelState.IsValid) { vm.Genres = await GetGenresAsync(); vm.Playlists = await GetPlaylistsAsync(); return View(vm); }
+            _context.GenrePlaylists.Add(new GenrePlaylist { GenreId = vm.GenreId, PlaylistId = vm.PlaylistId });
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Genre-Playlist link created.";
             return RedirectToAction(nameof(Index));
         }
-        return View(genreplaylist);
-    }
 
-    // GET: GENREPLAYLISTS/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Edit(int id)
         {
-            return NotFound();
+            var item = await _context.GenrePlaylists.FindAsync(id);
+            if (item == null) return NotFound();
+            return View(new GenrePlaylistFormViewModel { Id = item.Id, GenreId = item.GenreId, PlaylistId = item.PlaylistId, Genres = await GetGenresAsync(item.GenreId), Playlists = await GetPlaylistsAsync(item.PlaylistId) });
         }
 
-        var genreplaylist = await _context.GenrePlaylists.FindAsync(id);
-        if (genreplaylist == null)
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, GenrePlaylistFormViewModel vm)
         {
-            return NotFound();
-        }
-        return View(genreplaylist);
-    }
-
-    // POST: GENREPLAYLISTS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,GenreId,Genre,PlaylistId,Playlist")] GenrePlaylist genreplaylist)
-    {
-        if (id != genreplaylist.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(genreplaylist);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GenrePlaylistExists(genreplaylist.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (id != vm.Id) return NotFound();
+            if (!ModelState.IsValid) { vm.Genres = await GetGenresAsync(vm.GenreId); vm.Playlists = await GetPlaylistsAsync(vm.PlaylistId); return View(vm); }
+            var item = await _context.GenrePlaylists.FindAsync(id);
+            if (item == null) return NotFound();
+            item.GenreId = vm.GenreId; item.PlaylistId = vm.PlaylistId;
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Genre-Playlist link updated.";
             return RedirectToAction(nameof(Index));
         }
-        return View(genreplaylist);
-    }
 
-    // GET: GENREPLAYLISTS/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Delete(int id)
         {
-            return NotFound();
+            var item = await _context.GenrePlaylists.Include(x => x.Genre).Include(x => x.Playlist).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        var genreplaylist = await _context.GenrePlaylists
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (genreplaylist == null)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return NotFound();
+            var item = await _context.GenrePlaylists.FindAsync(id);
+            if (item != null) { _context.GenrePlaylists.Remove(item); await _context.SaveChangesAsync(); TempData["Success"] = "Genre-Playlist link deleted."; }
+            return RedirectToAction(nameof(Index));
         }
 
-        return View(genreplaylist);
-    }
+        private async Task<IEnumerable<SelectListItem>> GetGenresAsync(int? selectedId = null) =>
+            await _context.SongGenres.AsNoTracking().OrderBy(x => x.Name)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name, Selected = x.Id == selectedId })
+                .ToListAsync();
 
-    // POST: GENREPLAYLISTS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
-    {
-        var genreplaylist = await _context.GenrePlaylists.FindAsync(id);
-        if (genreplaylist != null)
-        {
-            _context.GenrePlaylists.Remove(genreplaylist);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool GenrePlaylistExists(int? id)
-    {
-        return _context.GenrePlaylists.Any(e => e.Id == id);
+        private async Task<IEnumerable<SelectListItem>> GetPlaylistsAsync(int? selectedId = null) =>
+            await _context.Playlists.AsNoTracking().OrderBy(x => x.Name)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name, Selected = x.Id == selectedId })
+                .ToListAsync();
     }
 }

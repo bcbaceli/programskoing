@@ -1,59 +1,29 @@
 @model WeddingApp.Models.Florist
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Florist Details";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Florist</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ArrangementName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ArrangementName)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ItemId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ItemId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Item)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Item)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PartnerId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PartnerId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Partner)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Partner)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.WeddingCeremonies)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.WeddingCeremonies)
-        </dd>
-    </dl>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Florist Details</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class="card" style="max-width:600px;">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Arrangement Name</dt>
+            <dd class="col-sm-8">@Model.ArrangementName</dd>
+
+            <dt class="col-sm-4">Item</dt>
+            <dd class="col-sm-8">@(Model.Item?.Name ?? "—")</dd>
+
+            <dt class="col-sm-4">Partner</dt>
+            <dd class="col-sm-8">@(Model.Partner?.Name ?? "—")</dd>
+        </dl>
+    </div>
+    <div class="card-footer d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Delete</a>
+    </div>
 </div>

@@ -1,48 +1,44 @@
-@model WeddingApp.Models.FoodMenu
+@model WeddingApp.ViewModels.FoodMenuFormViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New Food Menu";
 }
 
-<h1>Create</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>New Food Menu</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
 
-<h4>FoodMenu</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="PricePerPerson" class="control-label"></label>
+            <div class="mb-3">
+                <label asp-for="PricePerPerson" class="form-label"></label>
                 <input asp-for="PricePerPerson" class="form-control" />
                 <span asp-validation-for="PricePerPerson" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="RestaurantId" class="control-label"></label>
-                <input asp-for="RestaurantId" class="form-control" />
+            <div class="mb-3">
+                <label asp-for="RestaurantId" class="form-label"></label>
+                <select asp-for="RestaurantId" asp-items="Model.Restaurants" class="form-select">
+                    <option value="">-- Select --</option>
+                </select>
                 <span asp-validation-for="RestaurantId" class="text-danger"></span>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Restaurant" class="control-label"></label>
-                <input asp-for="Restaurant" class="form-control" />
-                <span asp-validation-for="Restaurant" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

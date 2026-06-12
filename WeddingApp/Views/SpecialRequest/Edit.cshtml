@@ -1,0 +1,39 @@
+@model WeddingApp.ViewModels.SpecialRequestFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Special Request";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Edit Special Request</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+            <input type="hidden" asp-for="Id" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="RestaurantId" class="form-label"></label>
+                <select asp-for="RestaurantId" asp-items="Model.Restaurants" class="form-select">
+                    <option value="">-- Select --</option>
+                </select>
+                <span asp-validation-for="RestaurantId" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

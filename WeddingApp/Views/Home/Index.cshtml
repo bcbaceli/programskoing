@@ -2,7 +2,43 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="hero-section">
+    <div class="hero-content">
+        <div class="hero-icon">💍</div>
+        <h1 class="hero-title">Your Perfect Wedding Starts Here</h1>
+        <p class="hero-subtitle">Plan every detail of your special day — from venues and florals to music and menus.</p>
+        <div class="hero-buttons">
+            <a asp-controller="Wedding" asp-action="Index" class="btn btn-wedding-primary">View Weddings</a>
+            <a asp-controller="WeddingTemplate" asp-action="Index" class="btn btn-wedding-outline">Browse Templates</a>
+        </div>
+    </div>
+</div>
+
+<div class="features-section">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">🌸</div>
+                <h5>Partners & Venues</h5>
+                <p>Find the best restaurants, florists, bands, and pastry chefs for your big day.</p>
+                <a asp-controller="Partner" asp-action="Index" class="feature-link">Explore Partners →</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">🎵</div>
+                <h5>Music & Playlists</h5>
+                <p>Curate the perfect soundtrack with custom playlists and genre selections.</p>
+                <a asp-controller="Playlist" asp-action="Index" class="feature-link">Browse Music →</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">🍽️</div>
+                <h5>Food & Menus</h5>
+                <p>Design your dream menu with special requests and custom food items.</p>
+                <a asp-controller="FoodMenu" asp-action="Index" class="feature-link">View Menus →</a>
+            </div>
+        </div>
+    </div>
 </div>

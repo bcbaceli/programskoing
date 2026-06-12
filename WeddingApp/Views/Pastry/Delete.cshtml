@@ -1,58 +1,35 @@
 @model WeddingApp.Models.Pastry
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Pastry";
 }
 
-<h1>Delete</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Delete Pastry</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>WeddingApp.Models.Pastry</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ItemId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ItemId)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Item)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Item)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PartnerId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PartnerId)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Partner)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Partner)
-        </dd>
-    </dl>
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+<div class="alert alert-danger">
+    Are you sure you want to delete <strong>@Model.Name</strong>? This action cannot be undone.
+</div>
+
+<div class="card" style="max-width:600px;">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4">Name</dt>
+            <dd class="col-sm-8">@Model.Name</dd>
+
+            <dt class="col-sm-4">Item</dt>
+            <dd class="col-sm-8">@(Model.Item?.Name ?? "—")</dd>
+
+            <dt class="col-sm-4">Partner</dt>
+            <dd class="col-sm-8">@(Model.Partner?.Name ?? "—")</dd>
+        </dl>
+    </div>
+    <div class="card-footer d-flex gap-2">
+        <form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        </form>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </div>
 </div>

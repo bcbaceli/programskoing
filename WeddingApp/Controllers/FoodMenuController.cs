@@ -1,150 +1,95 @@
-
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WeddingApp.Models;
 using WeddingApp.Data;
+using WeddingApp.Models;
+using WeddingApp.ViewModels;
 
-public class FoodMenuController : Controller
+namespace WeddingApp.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public FoodMenuController(AppDbContext context)
+    [AutoValidateAntiforgeryToken]
+    public class FoodMenuController : Controller
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        private const int PageSize = 10;
 
-    // GET: FOODMENUS
-    public async Task<IActionResult> Index()    
-    {
-        return View(await _context.FoodMenus.ToListAsync());
-    }
+        public FoodMenuController(AppDbContext context) => _context = context;
 
-    // GET: FOODMENUS/Details/5
-    public async Task<IActionResult> Details(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Index(string sortBy = "name", string sortDir = "asc", int page = 1)
         {
-            return NotFound();
+            var query = _context.FoodMenus.Include(x => x.Restaurant).AsNoTracking();
+            query = (sortBy, sortDir) switch
+            {
+                ("name",       "desc") => query.OrderByDescending(x => x.Name),
+                ("restaurant", "asc")  => query.OrderBy(x => x.Restaurant.Name),
+                ("restaurant", "desc") => query.OrderByDescending(x => x.Restaurant.Name),
+                ("price",      "asc")  => query.OrderBy(x => x.PricePerPerson),
+                ("price",      "desc") => query.OrderByDescending(x => x.PricePerPerson),
+                _ => query.OrderBy(x => x.Name)
+            };
+            var total = await query.CountAsync();
+            var items = await query.Skip((page - 1) * PageSize).Take(PageSize).ToListAsync();
+            return View(new IndexViewModel<FoodMenu> { Items = items, CurrentPage = page, TotalPages = (int)Math.Ceiling(total / (double)PageSize), SortBy = sortBy, SortDir = sortDir });
         }
 
-        var foodmenu = await _context.FoodMenus
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (foodmenu == null)
+        public async Task<IActionResult> Details(int id)
         {
-            return NotFound();
+            var item = await _context.FoodMenus.Include(x => x.Restaurant).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        return View(foodmenu);
-    }
+        public async Task<IActionResult> Create() =>
+            View(new FoodMenuFormViewModel { Restaurants = await GetRestaurantsAsync() });
 
-    // GET: FOODMENUS/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: FOODMENUS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Name,PricePerPerson,RestaurantId,Restaurant")] FoodMenu foodmenu)
-    {
-        if (ModelState.IsValid)
+        [HttpPost]
+        public async Task<IActionResult> Create(FoodMenuFormViewModel vm)
         {
-            _context.Add(foodmenu);
+            if (!ModelState.IsValid) { vm.Restaurants = await GetRestaurantsAsync(); return View(vm); }
+            _context.FoodMenus.Add(new FoodMenu { Name = vm.Name, PricePerPerson = vm.PricePerPerson, RestaurantId = vm.RestaurantId });
             await _context.SaveChangesAsync();
+            TempData["Success"] = $"Food menu '{vm.Name}' created.";
             return RedirectToAction(nameof(Index));
         }
-        return View(foodmenu);
-    }
 
-    // GET: FOODMENUS/Edit/5
-    public async Task<IActionResult> Edit(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Edit(int id)
         {
-            return NotFound();
+            var item = await _context.FoodMenus.FindAsync(id);
+            if (item == null) return NotFound();
+            return View(new FoodMenuFormViewModel { Id = item.Id, Name = item.Name, PricePerPerson = item.PricePerPerson, RestaurantId = item.RestaurantId, Restaurants = await GetRestaurantsAsync(item.RestaurantId) });
         }
 
-        var foodmenu = await _context.FoodMenus.FindAsync(id);
-        if (foodmenu == null)
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, FoodMenuFormViewModel vm)
         {
-            return NotFound();
-        }
-        return View(foodmenu);
-    }
-
-    // POST: FOODMENUS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,Name,PricePerPerson,RestaurantId,Restaurant")] FoodMenu foodmenu)
-    {
-        if (id != foodmenu.Id)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(foodmenu);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FoodMenuExists(foodmenu.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            if (id != vm.Id) return NotFound();
+            if (!ModelState.IsValid) { vm.Restaurants = await GetRestaurantsAsync(vm.RestaurantId); return View(vm); }
+            var item = await _context.FoodMenus.FindAsync(id);
+            if (item == null) return NotFound();
+            item.Name = vm.Name; item.PricePerPerson = vm.PricePerPerson; item.RestaurantId = vm.RestaurantId;
+            await _context.SaveChangesAsync();
+            TempData["Success"] = $"Food menu '{item.Name}' updated.";
             return RedirectToAction(nameof(Index));
         }
-        return View(foodmenu);
-    }
 
-    // GET: FOODMENUS/Delete/5
-    public async Task<IActionResult> Delete(int? id)
-    {
-        if (id == null)
+        public async Task<IActionResult> Delete(int id)
         {
-            return NotFound();
+            var item = await _context.FoodMenus.Include(x => x.Restaurant).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
         }
 
-        var foodmenu = await _context.FoodMenus
-            .FirstOrDefaultAsync(m => m.Id == id);
-        if (foodmenu == null)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            return NotFound();
+            var item = await _context.FoodMenus.FindAsync(id);
+            if (item != null) { _context.FoodMenus.Remove(item); await _context.SaveChangesAsync(); TempData["Success"] = $"Food menu '{item.Name}' deleted."; }
+            return RedirectToAction(nameof(Index));
         }
 
-        return View(foodmenu);
-    }
-
-    // POST: FOODMENUS/Delete/5
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
-    {
-        var foodmenu = await _context.FoodMenus.FindAsync(id);
-        if (foodmenu != null)
-        {
-            _context.FoodMenus.Remove(foodmenu);
-        }
-
-        await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
-    }
-
-    private bool FoodMenuExists(int? id)
-    {
-        return _context.FoodMenus.Any(e => e.Id == id);
+        private async Task<IEnumerable<SelectListItem>> GetRestaurantsAsync(int? selectedId = null) =>
+            await _context.Restaurants.AsNoTracking().OrderBy(x => x.Name)
+                .Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.Name, Selected = x.Id == selectedId })
+                .ToListAsync();
     }
 }

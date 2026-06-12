@@ -1,69 +1,57 @@
-@model WeddingApp.Models.Band
+@model WeddingApp.ViewModels.BandFormViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Band";
 }
 
-<h1>Edit</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Edit Band</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
 
-<h4>Band</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="col-md-6">
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DayAtWeek" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="DayAtWeek" class="form-label"></label>
                 <input asp-for="DayAtWeek" class="form-control" />
                 <span asp-validation-for="DayAtWeek" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="HoursPerWedding" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="HoursPerWedding" class="form-label"></label>
                 <input asp-for="HoursPerWedding" class="form-control" />
                 <span asp-validation-for="HoursPerWedding" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="TotalPrice" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="TotalPrice" class="form-label"></label>
                 <input asp-for="TotalPrice" class="form-control" />
                 <span asp-validation-for="TotalPrice" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="PartnerId" class="control-label"></label>
-                <input asp-for="PartnerId" class="form-control" />
+
+            <div class="mb-3">
+                <label asp-for="PartnerId" class="form-label"></label>
+                <select asp-for="PartnerId" asp-items="Model.Partners" class="form-select">
+                    <option value="">-- Select --</option>
+                </select>
                 <span asp-validation-for="PartnerId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Partner" class="control-label"></label>
-                <input asp-for="Partner" class="form-control" />
-                <span asp-validation-for="Partner" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="WeddingCeremonies" class="control-label"></label>
-                <input asp-for="WeddingCeremonies" class="form-control" />
-                <span asp-validation-for="WeddingCeremonies" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Bands" class="control-label"></label>
-                <input asp-for="Bands" class="form-control" />
-                <span asp-validation-for="Bands" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

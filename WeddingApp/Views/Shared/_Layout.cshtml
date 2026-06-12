@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -11,9 +11,9 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WeddingApp</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">💍 WeddingApp</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -21,10 +21,50 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">⚙️ Setup</a>
+                            <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header">Partners</h6></li>
+                                <li><a class="dropdown-item" asp-controller="PartnerCategory" asp-action="Index">Categories</a></li>
+                                <li><a class="dropdown-item" asp-controller="Partner" asp-action="Index">Partners</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Venues & Services</h6></li>
+                                <li><a class="dropdown-item" asp-controller="Restaurant" asp-action="Index">Restaurants</a></li>
+                                <li><a class="dropdown-item" asp-controller="Band" asp-action="Index">Bands</a></li>
+                                <li><a class="dropdown-item" asp-controller="Florist" asp-action="Index">Florists</a></li>
+                                <li><a class="dropdown-item" asp-controller="Pastry" asp-action="Index">Pastries</a></li>
+                                <li><a class="dropdown-item" asp-controller="Item" asp-action="Index">Items</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Music</h6></li>
+                                <li><a class="dropdown-item" asp-controller="SongGenre" asp-action="Index">Genres</a></li>
+                                <li><a class="dropdown-item" asp-controller="Song" asp-action="Index">Songs</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">💒 Weddings</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="WeddingTemplate" asp-action="Index">📋 Templates</a></li>
+                                <li><a class="dropdown-item" asp-controller="Wedding" asp-action="Index">💍 Weddings</a></li>
+                                <li><a class="dropdown-item" asp-controller="WeddingCeremony" asp-action="Index">🎊 Ceremonies</a></li>
+                                <li><a class="dropdown-item" asp-controller="Report" asp-action="Index">📊 Reports</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">🎵 Music</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Playlist" asp-action="Index">Playlists</a></li>
+                                <li><a class="dropdown-item" asp-controller="GenrePlaylist" asp-action="Index">Genre-Playlists</a></li>
+                                <li><a class="dropdown-item" asp-controller="SongPlaylist" asp-action="Index">Song-Playlists</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">🍽️ Food</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="FoodMenu" asp-action="Index">Menus</a></li>
+                                <li><a class="dropdown-item" asp-controller="SpecialRequest" asp-action="Index">Special Requests</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -37,7 +77,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer">
         <div class="container">
             &copy; 2026 - WeddingApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
